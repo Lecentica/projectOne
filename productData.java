@@ -1,6 +1,5 @@
 public class productData {
     protected int id=-1;
-    protected String type="N/A";
     protected String director="N/A";
     protected String country="N/A";
     protected int releaseYear=-1;
@@ -13,7 +12,6 @@ public class productData {
     public productData(int i, String t, String d, String c, int ry, String r, double l, String s)
     {
         id=i;
-        type=t;
         director=d;
         country=c;
         releaseYear=ry;
@@ -24,7 +22,6 @@ public class productData {
     public productData(int i, String t, String n,int ry)
     {
         id=i;
-        type=t;
         title=n;
         releaseYear=ry;
     }
@@ -35,10 +32,6 @@ public class productData {
         return id;
     }
 
-    public String getType()
-    {
-        return type;
-    }
 
     public String getDirector()
     {
