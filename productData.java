@@ -3,7 +3,6 @@ public class productData {
     protected String director;
     protected String country;
     protected int releaseYear;
-    protected int numberOfSeasons;
     protected String title;
     public int getGlobalSales;
 
@@ -52,11 +51,5 @@ public class productData {
         return releaseYear;
     }
 
-
-
-    public int getNumberOfSeasons()
-    {
-        return numberOfSeasons;
-    }
 
 }

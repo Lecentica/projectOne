@@ -1,5 +1,8 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -46,39 +49,25 @@ public class Manager {
     }
 
     public int getTotalMovies() {
-        int count = 0;
-        for (productData product : products) {
-            if (product instanceof Movies) {
-                count++;
-            }
-        }
-        return count;
+        return countProducts(Movies.class);
     }
 
     public int getTotalTVShows() {
-        int count = 0;
-        for (productData product : products) {
-            if (product instanceof TVShows) {
-                count++;
-            }
-        }
-        return count;
+        return countProducts(TVShows.class);
     }
 
     public int getTotalVideoGames() {
-        int count = 0;
-        for (productData product : products) {
-            if (product instanceof VideoGames) {
-                count++;
-            }
-        }
-        return count;
+        return countProducts(VideoGames.class);
     }
 
     public int getTotalMusicAlbums() {
+        return countProducts(MusicAlbums.class);
+    }
+
+    private int countProducts(Class<?> productType) {
         int count = 0;
         for (productData product : products) {
-            if (product instanceof MusicAlbums) {
+            if (productType.isInstance(product)) {
                 count++;
             }
         }
@@ -122,7 +111,7 @@ public class Manager {
 
     public productData getPopularVideoGame()
     {
-        double temp=Double.MIN_VALUE;
+        double temp=Double.NEGATIVE_INFINITY;
         int count=0;
         int index=0;
         for (productData product : products)
@@ -138,32 +127,40 @@ public class Manager {
         return products.get(index);
     }
 
-    public String getCommonRating()
+    public List<String> getCommonRatings()
     {
-        HashMap <String, Integer> list = new HashMap<>();
-        int MAX_VALUE=Integer.MIN_VALUE;
-        String commonRating="";
+        Map<String, Integer> counts = new HashMap<>();
+
         for (productData product : products)
         {
-            if (product instanceof digitalMediaData)
+            if (product instanceof digitalMediaData media)
             {
-                String temp = ((digitalMediaData) product).getRating();
-                if(list.get(temp)==null)
-                    list.put(temp, 0);
-                else
-                {
-                    list.put(temp, list.get(temp)+1);
-                    if(MAX_VALUE<list.get(temp))
-                    {
-                        MAX_VALUE=list.get(temp);
-                        commonRating=temp;
-                    }
-                }
-
+                String rating = media.getRating();
+                if (rating == null || rating.isBlank())
+                    continue;
+                counts.merge(rating, 1, Integer::sum);
             }
-        
         }
-        return commonRating;
+
+        List<String> mostCommon = new ArrayList<>();
+        int maxCount = 0;
+
+        for (Map.Entry<String, Integer> entry : counts.entrySet())
+        {
+            if (entry.getValue() > maxCount)
+            {
+                maxCount = entry.getValue();
+                mostCommon.clear();
+                mostCommon.add(entry.getKey());
+            }
+            else if (entry.getValue() == maxCount)
+            {
+                mostCommon.add(entry.getKey());
+            }
+        }
+
+        Collections.sort(mostCommon);
+        return mostCommon;
     }
 
     public productData getShortestMovie()

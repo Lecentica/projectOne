@@ -5,4 +5,9 @@ public class TVShows extends digitalMediaData {
         super(i, n, d, c, ry, r, s);
         numberOfSeasons = l;
     }
+
+    public int getNumberOfSeasons()
+    {
+        return numberOfSeasons;
+    }
 }
