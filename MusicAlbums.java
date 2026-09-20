@@ -3,13 +3,15 @@ public class MusicAlbums extends productData {
     int globalSales;
     int tracks;
     String genre;
-
+    double duration;
+    
     public MusicAlbums(int i, int ry, String a, String n, int gs, int tr, double d, String g) {
         super(i, n, ry);
         artist = a;
         globalSales = gs;
         tracks = tr;
         genre = g;
+        duration = d;
     }
 
     public String getArtist()
@@ -30,5 +32,10 @@ public class MusicAlbums extends productData {
     public String getGenre()
     {
         return genre;
+    }
+
+    public double getDuration()
+    {
+        return duration;
     }
 }

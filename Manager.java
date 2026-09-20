@@ -17,12 +17,16 @@ public class Manager {
             Scanner fileScanner = new Scanner(new File(fileName));
             while(fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine();
+                if (line.trim().isEmpty()) {
+                    break;
+                }
                 String[] data = line.split(",");
                 String type = data[1];
                 if (type.equals("Movie")) {
                     products.add(new Movies(Integer.parseInt(data[0]), data[2], data[3], data[4], Integer.parseInt(data[5]), data[6], Integer.parseInt(data[7]), data[8]));
                 } else if (type.equals("TV Show")) {
-                    products.add(new TVShows(Integer.parseInt(data[0]), data[2], data[3], data[4], data[5], Integer.parseInt(data[6]), data[7], Integer.parseInt(data[8]), data[9]));
+                    String[] temp = data[7].split(" ");
+                    products.add(new TVShows(Integer.parseInt(data[0]), data[2], data[3], data[4], Integer.parseInt(data[5]), data[6], Integer.parseInt(temp[0]), data[8]));
                 } else if (type.equals("Music Album")) {
                     products.add(new MusicAlbums(Integer.parseInt(data[0]), Integer.parseInt(data[2]), data[3], data[4], Integer.parseInt(data[5]), Integer.parseInt(data[6]), Double.parseDouble(data[7]), data[8]));
                 } else if (type.equals("Video Game")) {
@@ -118,7 +122,7 @@ public class Manager {
 
     public productData getPopularVideoGame()
     {
-        int temp=Integer.MIN_VALUE;
+        double temp=Double.MIN_VALUE;
         int count=0;
         int index=0;
         for (productData product : products)
@@ -143,15 +147,17 @@ public class Manager {
         {
             if (product instanceof digitalMediaData)
             {
-                String temp = product.getRating();
+                String temp = ((digitalMediaData) product).getRating();
                 if(list.get(temp)==null)
                     list.put(temp, 0);
                 else
-                    list.put(temp, list.get(temp+1));
-                if(MAX_VALUE<list.get(temp))
                 {
-                    MAX_VALUE=list.get(temp);
-                    commonRating=temp;
+                    list.put(temp, list.get(temp)+1);
+                    if(MAX_VALUE<list.get(temp))
+                    {
+                        MAX_VALUE=list.get(temp);
+                        commonRating=temp;
+                    }
                 }
 
             }
@@ -162,33 +168,37 @@ public class Manager {
 
     public productData getShortestMovie()
     {
-        double temp=Integer.MAX_VALUE;
-        productData shortestMovie=null;
+        double temp=Double.MAX_VALUE;
+        int count=0;
+        int index=0;
         for (productData product : products)
         {
             if (product instanceof Movies)
-                if (product.getDuration()<temp)
+                if (((Movies) product).getDuration()<temp)
                 {
                     temp=((Movies) product).getDuration();
-                    shortestMovie=product;
+                    index=count;
                 }
+            count++;
         }
-        return shortestMovie;
+        return products.get(index);
     }
 
     public productData getShortestAlbum()
     {
-        int temp=Integer.MAX_VALUE;
-        productData shortestAlbum=null;
+        double temp=Double.MAX_VALUE;
+        int count=0;
+        int index=0;
         for (productData product : products)
         {
             if (product instanceof MusicAlbums)
                 if (((MusicAlbums) product).getNumTracks()<temp)
                 {
                     temp=((MusicAlbums) product).getNumTracks();
-                    shortestAlbum=product;
+                    index=count;
                 }
+            count++;
         }
-        return shortestAlbum;
+        return products.get(index);
     }
 }

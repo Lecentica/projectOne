@@ -27,7 +27,7 @@ public class VideoGames extends productData {
 		return publisher;
 	}
 
-	public int getCopiesSold()
+	public double getCopiesSold()
 	{
 		return copiesSold;
 	}

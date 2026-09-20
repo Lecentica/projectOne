@@ -12,5 +12,10 @@ public class digitalMediaData extends productData{
         discription=s;
 
     }
+
+    public String getRating()
+    {
+        return rating;
+    }
     
 }
