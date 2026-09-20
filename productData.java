@@ -7,9 +7,10 @@ public class productData {
     protected double duration=-1.0;
     protected int numberOfSeasons=-1;
     protected String title="N/A";
+    public int getGlobalSales;
 
     //Overloaded constructor accepting Movie and TV Show parameters
-    public productData(int i, String t, String d, String c, int ry, String r, double l, String s)
+    public productData(int i, String d, String c, int ry, String r, double l, String s)
     {
         id=i;
         director=d;
@@ -19,7 +20,7 @@ public class productData {
     }
 
     //Overloaded constructor accepting general parameters
-    public productData(int i, String t, String n,int ry)
+    public productData(int i, String n,int ry)
     {
         id=i;
         title=n;
@@ -32,6 +33,10 @@ public class productData {
         return id;
     }
 
+    public String getTitle()
+    {
+        return title;
+    }
 
     public String getDirector()
     {
@@ -62,4 +67,5 @@ public class productData {
     {
         return numberOfSeasons;
     }
+
 }

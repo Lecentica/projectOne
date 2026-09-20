@@ -4,8 +4,8 @@ public class digitalMediaData extends productData{
     protected String rating;
     protected String discription;
 
-    public digitalMediaData(int i, String t, String n, String d, String c, int ry, String r, String s) {
-        super(i, t, n, ry);
+    public digitalMediaData(int i, String n, String d, String c, int ry, String r, String s) {
+        super(i, n, ry);
         director=d;
         country=c;
         rating=r;

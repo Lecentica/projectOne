@@ -2,15 +2,33 @@ public class MusicAlbums extends productData {
     String artist;
     int globalSales;
     int tracks;
-    double duration;
     String genre;
 
-    public MusicAlbums(int i, String t, int ry, String a, String n, int gs, int tr, double d, String g) {
-        super(i, t, n, ry);
+    public MusicAlbums(int i, int ry, String a, String n, int gs, int tr, double d, String g) {
+        super(i, n, ry);
         artist = a;
         globalSales = gs;
         tracks = tr;
-        duration = d;
         genre = g;
+    }
+
+    public String getArtist()
+    {
+        return artist;
+    }
+
+    public int getGlobalSales()
+    {
+        return globalSales;
+    }
+
+    public int getNumTracks()
+    {
+        return tracks;
+    }
+
+    public String getGenre()
+    {
+        return genre;
     }
 }
