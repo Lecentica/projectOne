@@ -1,2 +1,2 @@
 Main.class: Main.java
-	javac Main.java
+	javac ManagerRunner.java

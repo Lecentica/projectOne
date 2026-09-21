@@ -9,14 +9,16 @@ public class ManagerRunner {
         {
             System.out.print("Welcome to the Product Manager! \nPlease enter the name of the CSV file you would like to load (e.g. project1dataset.csv): ");
             String fileName = input.nextLine().trim();
-            if(manager.readFile(fileName))
+            String result = manager.readFile(fileName);
+            if(!result.contains("File not found"))
             {
-                System.out.println("File loaded successfully!");
+                System.out.println(result);
+
                 loop = false;   
             }
             else
             {
-                System.out.println("File not found. Please try again.");
+                System.out.println(result);
             }
         
         }   
@@ -70,13 +72,13 @@ public class ManagerRunner {
                         System.out.println("Most popular Video Game: " + manager.getPopularVideoGame().getTitle() + ", with copies sold of " + ((VideoGames) manager.getPopularVideoGame()).getCopiesSold() + " million copies");
                         break;
                     case "4":
-                        System.out.println("Most common age rating among all film products: " + manager.getCommonRating());
+                        System.out.println("Most common age rating among all film products, lists ties: " + manager.getCommonRatings());
                         break;
                     case "5":
                         System.out.println("Shortest Movie: " + manager.getShortestMovie().getTitle() + ", with a duration of " + ((Movies) manager.getShortestMovie()).getDuration() + " minutes");
                         break;
                     case "6":
-                        System.out.println("Shortest Music Album: " + ((MusicAlbums) manager.getShortestAlbum()).getTitle() + ", with a duration of " + ((MusicAlbums) manager.getShortestAlbum()).getDuration() + " minutes");
+                        System.out.println("Shortest Music Album: " + ((MusicAlbums) manager.getShortestAlbumDuration()).getTitle() + ", with a duration of " + ((MusicAlbums) manager.getShortestAlbumDuration()).getDuration() + " minutes");
                         break;
                     case "7":
                         mainLoop = false;
