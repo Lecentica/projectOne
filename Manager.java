@@ -1,74 +1,40 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Set;
-import java.util.regex.Pattern;
+import java.util.Locale;
 
 public class Manager {
-    final Pattern HAS_LETTER = Pattern.compile("[a-zA-Z]");
+    
     private ArrayList<productData> products;
-
-    private boolean isValidIntegerValue(String value) {
-        if (value == null || !value.matches("\\d+")) {
-            return false;
-        }
-        try {
-            return Long.parseLong(value) <= Integer.MAX_VALUE;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
 
     public Manager() {
         products = new ArrayList<>();
     }
 
-    private List<String> validateProductData(String id, String title, String releaseYear) {
-        List<String> errors = new ArrayList<>();
-        if (!isValidIntegerValue(id)) {
-            errors.add("Invalid product ID");
+    private boolean appendValidationMessages(List<String> warnings, List<String> errors, int lineNumber,
+            List<List<String>> validation) {
+        for (String warning : validation.get(0)) {
+            warnings.add("Line " + lineNumber + ": " + warning);
         }
-        if (title == null || title.isBlank()) {
-            errors.add("Invalid product title");
+        for (String error : validation.get(1)) {
+            errors.add("Line " + lineNumber + ": " + error);
         }
-        if (!isValidIntegerValue(releaseYear)) {
-            errors.add("Invalid product release year");
-        }
-        return errors;
+        return validation.get(1).isEmpty();
     }
 
-    private List<String> validateDigitalMediaData(String id, String title, String releaseYear, String director,
-            String country, String description) {
-        List<String> errors = new ArrayList<>();
-        if (!isValidIntegerValue(id)) {
-            errors.add("Invalid digital media ID");
-        }
-        if (title == null || title.isBlank()) {
-            errors.add("Invalid digital media title");
-        }
-        if (!isValidIntegerValue(releaseYear)) {
-            errors.add("Invalid digital media release year");
-        }
-        if (director == null || !HAS_LETTER.matcher(director).find()) {
-            errors.add("Invalid digital media director");
-        }
-        if (country == null || !HAS_LETTER.matcher(country).find()) {
-            errors.add("Invalid digital media country");
-        }
-        if (description == null || !HAS_LETTER.matcher(description).find()) {
-            errors.add("Invalid digital media description");
-        }
-        return errors;
+    private String normalizedRating(String value) {
+        String rating = ValidationUtils.substituteUnknown(value);
+        return rating.equals("Unknown") ? rating : rating.toUpperCase(Locale.ROOT);
     }
 
     public String readFile(String fileName) {
-        StringBuilder logs = new StringBuilder();
+        List<String> warnings = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
         products.clear();
         int linesSkipped = 0;
         try {
@@ -83,161 +49,99 @@ public class Manager {
                 String[] data = line.split(",");
                 
                 if(data.length < 2) {
-                    logs.append("\tLine ").append(lineNumber).append(": Invalid number of fields ")
-                            .append(data.length).append("\n");
+                    errors.add("Line " + lineNumber + ": Invalid number of fields " + data.length);
                     linesSkipped++;
                     continue;
                 }
                 String type = data[1];
                 if (type.equals("Movie")) {
-                    boolean isValid = true;
                     if (data.length != 9) {
-                        logs.append("\tLine ").append(lineNumber).append(": Invalid number of fields ")
-                                .append(data.length).append("\n");
-                        isValid = false;
+                        errors.add("Line " + lineNumber + ": Invalid number of fields " + data.length);
                         linesSkipped++;
                         continue;
                     }
-                    List<String> digitalMediaValidation = validateDigitalMediaData(data[0], data[2], data[5], data[3],
-                            data[4], data[8]);
-                    for (String error : digitalMediaValidation) {
-                        logs.append("\tLine ").append(lineNumber).append(": ").append(error).append("\n");
-                        isValid = false;
-                    }
-                    if (!Movies.MOVIE_RATINGS.contains(data[6].toUpperCase())) {
-                        logs.append("\tLine ").append(lineNumber).append(": Invalid movie rating\n");
-                        isValid = false;
-                    }
-                    if (!data[7].matches("\\d+")) {
-                        logs.append("\tLine ").append(lineNumber).append(": Invalid movie duration\n");
-                        isValid = false;
-                    }
+                        boolean isValid = appendValidationMessages(warnings, errors, lineNumber,
+                            Movies.validateMovieData(data[0], data[2], data[5], data[3], data[4], data[6], data[7], data[8]));
                     if (isValid)
-                        products.add(new Movies(Integer.parseInt(data[0]), data[2], data[3], data[4], Integer.parseInt(data[5]), data[6], Integer.parseInt(data[7]), data[8]));
+                        products.add(new Movies(Integer.parseInt(data[0]), ValidationUtils.substituteUnknown(data[2]),
+                            ValidationUtils.substituteUnknown(data[3]), ValidationUtils.substituteUnknown(data[4]),
+                            Integer.parseInt(data[5]), normalizedRating(data[6]), Integer.parseInt(data[7]),
+                            ValidationUtils.substituteUnknown(data[8])));
                     else
                         linesSkipped++;
                 } else if (type.equals("TV Show")) {
-                    boolean isValid = true;
                     if (data.length != 9) {
-                        logs.append("\tLine ").append(lineNumber).append(": Invalid number of fields ")
-                                .append(data.length).append("\n");
-                        isValid = false;
+                        errors.add("Line " + lineNumber + ": Invalid number of fields " + data.length);
                         linesSkipped++;
                         continue;
                     }
-                    List<String> digitalMediaValidation = validateDigitalMediaData(data[0], data[2], data[5], data[3],
-                            data[4], data[8]);
-                    for (String error : digitalMediaValidation) {
-                        logs.append("\tLine ").append(lineNumber).append(": ").append(error).append("\n");
-                        isValid = false;
-                    }
-                    if (!TVShows.TV_SHOW_RATINGS.contains(data[6].toUpperCase())) {
-                        logs.append("\tLine ").append(lineNumber).append(": Invalid TV show rating\n");
-                        isValid = false;
-                    }
-                    int seasons = -1;
-                    if (!data[7].matches("\\d+ [a-zA-Z]+")) {
-                        logs.append("\tLine ").append(lineNumber).append(": Invalid number of seasons\n");
-                        isValid = false;
-                    }
-                    else
-                    {
-                        String[] temp = data[7].split(" ");
-                        seasons = Integer.parseInt(temp[0]);
-                    }
+                        boolean isValid = appendValidationMessages(warnings, errors, lineNumber,
+                            TVShows.validateTVShowData(data[0], data[2], data[5], data[3], data[4], data[6], data[7], data[8]));
+                    int seasons = isValid ? Integer.parseInt(data[7].split(" ")[0]) : 0;
                     if (isValid)
-                        products.add(new TVShows(Integer.parseInt(data[0]), data[2], data[3], data[4],
-                                Integer.parseInt(data[5]), data[6], seasons, data[8]));
+                        products.add(new TVShows(Integer.parseInt(data[0]), ValidationUtils.substituteUnknown(data[2]),
+                            ValidationUtils.substituteUnknown(data[3]), ValidationUtils.substituteUnknown(data[4]),
+                            Integer.parseInt(data[5]), normalizedRating(data[6]), seasons,
+                            ValidationUtils.substituteUnknown(data[8])));
                     else
                         linesSkipped++;
                 } else if (type.equals("Music Album")) {
-                    boolean isValid = true;
                     if (data.length != 9) {
-                        logs.append("\tLine ").append(lineNumber).append(": Invalid number of fields ")
-                                .append(data.length).append("\n");
-                        isValid = false;
+                        errors.add("Line " + lineNumber + ": Invalid number of fields " + data.length);
                         linesSkipped++;
                         continue;
                     }
-                    List<String> productValidation = validateProductData(data[0], data[4], data[2]);
-                    for (String error : productValidation) {
-                        logs.append("\tLine ").append(lineNumber).append(": ").append(error).append("\n");
-                        isValid = false;
-                    }
-                    if (!HAS_LETTER.matcher(data[3]).find()) {
-                        logs.append("\tLine ").append(lineNumber).append(": Invalid music album artist\n");
-                        isValid = false;
-                    }
-                    if (!data[6].matches("\\d+")) {
-                        logs.append("\tLine ").append(lineNumber).append(": Invalid music album tracklist\n");
-                        isValid = false;
-                    }
-                    if (!isValidIntegerValue(data[5])) {
-                        logs.append("\tLine ").append(lineNumber).append(": Invalid music album global sales\n");
-                        isValid = false;
-                    }
-                    if (!data[7].matches("\\d+(\\.\\d+)?")) {
-                        logs.append("\tLine ").append(lineNumber).append(": Invalid music album duration\n");
-                        isValid = false;
-                    }
-                    if (!HAS_LETTER.matcher(data[8]).find()) {
-                        logs.append("\tLine ").append(lineNumber).append(": Invalid music album genre\n");
-                        isValid = false;
-                    }
+                        boolean isValid = appendValidationMessages(warnings, errors, lineNumber,
+                            MusicAlbums.validateMusicAlbumData(data[0], data[2], data[3], data[4], data[5], data[6], data[7], data[8]));
                     if (isValid)
-                        products.add(new MusicAlbums(Integer.parseInt(data[0]), Integer.parseInt(data[2]), data[3],
-                                data[4], Integer.parseInt(data[5]), Integer.parseInt(data[6]), Double.parseDouble(data[7]), data[8]));
+                        products.add(new MusicAlbums(Integer.parseInt(data[0]), Integer.parseInt(data[2]),
+                            ValidationUtils.substituteUnknown(data[3]), ValidationUtils.substituteUnknown(data[4]),
+                            Integer.parseInt(data[5]), Integer.parseInt(data[6]), Double.parseDouble(data[7]),
+                            ValidationUtils.substituteUnknown(data[8])));
                     else
                         linesSkipped++;
                 } else if (type.equals("Video Game")) {
-                    boolean isValid = true;
                     if (data.length != 8) {
-                        logs.append("\tLine ").append(lineNumber).append(": Invalid number of fields ")
-                                .append(data.length).append("\n");
-                        isValid = false;
+                        errors.add("Line " + lineNumber + ": Invalid number of fields " + data.length);
                         linesSkipped++;
                         continue;
                     }
-                    List<String> productValidation = validateProductData(data[0], data[2], data[4]);
-                    for (String error : productValidation) {
-                        logs.append("\tLine ").append(lineNumber).append(": ").append(error).append("\n");
-                        isValid = false;
-                    }
-                    if (!HAS_LETTER.matcher(data[3]).find()) {
-                        logs.append("\tLine ").append(lineNumber).append(": Invalid video game platform\n");
-                        isValid = false;
-                    }
-                    if (!HAS_LETTER.matcher(data[5]).find()) {
-                        logs.append("\tLine ").append(lineNumber).append(": Invalid video game genre\n");
-                        isValid = false;
-                    }
-                    if (!HAS_LETTER.matcher(data[6]).find()) {
-                        logs.append("\tLine ").append(lineNumber).append(": Invalid video game publisher\n");
-                        isValid = false;
-                    }
-                    if (!data[7].matches("\\d+(\\.\\d+)?")) {
-                        logs.append("\tLine ").append(lineNumber).append(": Invalid video game copies sold\n");
-                        isValid = false;
-                    }
+                        boolean isValid = appendValidationMessages(warnings, errors, lineNumber,
+                            VideoGames.validateVideoGameData(data[0], data[2], data[3], data[4], data[5], data[6], data[7]));
                     if (isValid)
-                        products.add(new VideoGames(Integer.parseInt(data[0]), data[2], data[3],
-                                Integer.parseInt(data[4]), data[5], data[6], Double.parseDouble(data[7])));
+                        products.add(new VideoGames(Integer.parseInt(data[0]), ValidationUtils.substituteUnknown(data[2]),
+                            ValidationUtils.substituteUnknown(data[3]), Integer.parseInt(data[4]),
+                            ValidationUtils.substituteUnknown(data[5]), ValidationUtils.substituteUnknown(data[6]),
+                            Double.parseDouble(data[7])));
                     else
                         linesSkipped++;
                 }
                 else {
-                    logs.append("\tLine ").append(lineNumber).append(": Invalid product type\n");
+                    errors.add("Line " + lineNumber + ": Invalid product type");
                     linesSkipped++;
                 }
             }
             fileScanner.close();
         } catch (FileNotFoundException e) {
-            logs.append("\tFile not found: ").append(fileName).append("\n");
-            return logs.toString();
+            return "\tFile not found: " + fileName + "\n";
         }
         StringBuilder temp = new StringBuilder();
-        temp.append("Loaded ").append(products.size()).append(" records.\n\tSkipped ").append(linesSkipped).append(" malformed rows:\n");
-        temp.append(logs);
+        temp.append("Loaded ").append(products.size()).append(" records.\n\n");
+        if (!warnings.isEmpty()) {
+            temp.append("Warnings (").append(warnings.size()).append("):\n");
+            for (String warning : warnings) {
+                temp.append("  ").append(warning).append("\n");
+            }
+            temp.append("\n");
+        }
+        if (!errors.isEmpty()) {
+            temp.append("Errors (").append(errors.size()).append("):\n");
+            for (String error : errors) {
+                temp.append("  ").append(error).append("\n");
+            }
+            temp.append("\n");
+        }
+        temp.append("Skipped ").append(linesSkipped).append(" malformed rows.\n");
         return temp.toString();
     }
 
