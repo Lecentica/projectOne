@@ -2,93 +2,41 @@ import java.util.Scanner;
 
 public class ManagerRunner {
     public static void main(String[] args) {
-        boolean loop = true;
         Manager manager = new Manager();
         Scanner input = new Scanner(System.in);
-        while(loop)
-        {
+        while (true) {
             System.out.print("Welcome to the Product Manager! \nPlease enter the name of the CSV file you would like to load (e.g. project1dataset.csv): ");
             String fileName = input.nextLine().trim();
             String result = manager.readFile(fileName);
-            if(!result.contains("File not found"))
-            {
-                System.out.println(result);
-
-                loop = false;   
+            System.out.println(result);
+            if (!result.contains("File not found")) {
+                break;
             }
-            else
-            {
-                System.out.println(result);
-            }
-        
-        }   
-        boolean mainLoop = true;
-        boolean pageSelection = true;
-        while(mainLoop)
-        {
-            if(pageSelection)
-                System.out.println("Please select an option, select a non option to switch pages: \n 1. Display total number of products \n 2. Display total number of movies \n 3. Display total number of TV shows \n 4. Display total number of music albums \n 5. Display total number of video games \n 6. Exit                    p1/2");
-            else
-                System.out.println("Please select an option, select a non option to switch pages: \n 1. Display oldest product (by release_year) \n 2. Display most popular Music Album \n 3. Display most popular Video Game \n 4. Display most common age rating among all film products \n 5. Display shortest Movie \n 6. Display shortest Music Album \n 7. Exit                   p2/2");
-            System.out.print("Please enter your selection: ");
-            String temp = input.nextLine().trim();
-            if(pageSelection)
-            {
-                switch(temp)
-                {
-                    case "1":
-                        System.out.println("Total number of products: " + manager.getTotalProducts());
-                        break;
-                    case "2":
-                        System.out.println("Total number of movies: " + manager.getTotalMovies());
-                        break;
-                    case "3":
-                        System.out.println("Total number of TV shows: " + manager.getTotalTVShows());
-                        break;
-                    case "4":
-                        System.out.println("Total number of music albums: " + manager.getTotalMusicAlbums());
-                        break;
-                    case "5":
-                        System.out.println("Total number of video games: " + manager.getTotalVideoGames());
-                        break;
-                    case "6":
-                        mainLoop = false;
-                        break;
-                    default:
-                        pageSelection = false;
-                }
-            }
-            else
-            {
-                switch(temp)
-                {
-                    case "1":
-                        System.out.println("Oldest product: " + manager.getOldestProduct().getTitle() + ", released in " + manager.getOldestProduct().getReleaseYear());
-                        break;
-                    case "2":
-                        System.out.println("Most popular Music Album: " + manager.getMostPopularMusicAlbum().getTitle() + ", with global sales of " + ((MusicAlbums) manager.getMostPopularMusicAlbum()).getGlobalSales() + " copies");
-                        break;
-                    case "3":
-                        System.out.println("Most popular Video Game: " + manager.getPopularVideoGame().getTitle() + ", with copies sold of " + ((VideoGames) manager.getPopularVideoGame()).getCopiesSold() + " million copies");
-                        break;
-                    case "4":
-                        System.out.println("Most common age rating among all film products, lists ties: " + manager.getCommonRatings());
-                        break;
-                    case "5":
-                        System.out.println("Shortest Movie: " + manager.getShortestMovie().getTitle() + ", with a duration of " + ((Movies) manager.getShortestMovie()).getDuration() + " minutes");
-                        break;
-                    case "6":
-                        System.out.println("Shortest Music Album: " + ((MusicAlbums) manager.getShortestAlbumDuration()).getTitle() + ", with a duration of " + ((MusicAlbums) manager.getShortestAlbumDuration()).getDuration() + " minutes");
-                        break;
-                    case "7":
-                        mainLoop = false;
-                        break;
-                    default:
-                        pageSelection = true;
-                }
-            }
-            System.out.println();
         }
+
+        System.out.println("Total number of products: " + manager.getTotalProducts());
+        System.out.println("Total number of movies: " + manager.getTotalMovies());
+        System.out.println("Total number of TV shows: " + manager.getTotalTVShows());
+        System.out.println("Total number of video games: " + manager.getTotalVideoGames());
+        System.out.println("Total number of music albums: " + manager.getTotalMusicAlbums());
+
+        productData oldestProduct = manager.getOldestProduct();
+        System.out.println("Oldest product: " + oldestProduct.getTitle() + ", released in " + oldestProduct.getReleaseYear());
+
+        MusicAlbums popularAlbum = (MusicAlbums) manager.getMostPopularMusicAlbum();
+        System.out.println("Most popular Music Album: " + popularAlbum.getTitle() + ", with global sales of " + popularAlbum.getGlobalSales() + " copies");
+
+        VideoGames popularGame = (VideoGames) manager.getPopularVideoGame();
+        System.out.println("Most popular Video Game: " + popularGame.getTitle() + ", with copies sold of " + popularGame.getCopiesSold() + " million copies");
+
+        System.out.println("Most common age rating among all film products, lists ties: " + manager.getCommonRatings());
+
+        Movies shortestMovie = (Movies) manager.getShortestMovie();
+        System.out.println("Shortest Movie: " + shortestMovie.getTitle() + ", with a duration of " + shortestMovie.getDuration() + " minutes");
+
+        MusicAlbums shortestAlbum = (MusicAlbums) manager.getShortestAlbumDuration();
+        System.out.println("Shortest Music Album: " + shortestAlbum.getTitle() + ", with a duration of " + shortestAlbum.getDuration() + " minutes");
+
         input.close();
     }
 }
