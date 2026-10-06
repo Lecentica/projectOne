@@ -1,3 +1,5 @@
+import java.util.List;
+
 public class MusicAlbums extends productData {
     String artist;
     int globalSales;
@@ -37,5 +39,23 @@ public class MusicAlbums extends productData {
     public double getDuration()
     {
         return duration;
+    }
+
+    public static List<List<String>> validateMusicAlbumData(String id, String releaseYear, String artist, String title,
+            String globalSales, String tracks, String duration, String genre) {
+        List<List<String>> logs = ValidationUtils.validateProductData(id, title, releaseYear, "product");
+        List<String> errors = logs.get(1);
+        ValidationUtils.addTextWarning(logs.get(0), "music album artist", artist);
+        if (!ValidationUtils.isValidIntegerValue(tracks)) {
+            errors.add("Invalid music album tracklist");
+        }
+        if (!ValidationUtils.isValidIntegerValue(globalSales)) {
+            errors.add("Invalid music album global sales");
+        }
+        if (duration == null || !duration.matches("\\d+(\\.\\d+)?")) {
+            errors.add("Invalid music album duration");
+        }
+        ValidationUtils.addTextWarning(logs.get(0), "music album genre", genre);
+        return logs;
     }
 }
