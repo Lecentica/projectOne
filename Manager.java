@@ -6,18 +6,16 @@ import java.util.Map;
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Locale;
 
 public class Manager {
     
-    private ArrayList<productData> products;
+    private ArrayList<ProductData> products;
 
     public Manager() {
         products = new ArrayList<>();
     }
 
-    private boolean appendValidationMessages(List<String> warnings, List<String> errors, int lineNumber,
-            List<List<String>> validation) {
+    private boolean appendValidationMessages(List<String> warnings, List<String> errors, int lineNumber, List<List<String>> validation) {
         for (String warning : validation.get(0)) {
             warnings.add("Line " + lineNumber + ": " + warning);
         }
@@ -29,7 +27,7 @@ public class Manager {
 
     private String normalizedRating(String value) {
         String rating = ValidationUtils.substituteUnknown(value);
-        return rating.equals("Unknown") ? rating : rating.toUpperCase(Locale.ROOT);
+        return rating.equals("Unknown") ? rating : rating.toUpperCase();
     }
 
     public String readFile(String fileName) {
@@ -77,7 +75,7 @@ public class Manager {
                     }
                         boolean isValid = appendValidationMessages(warnings, errors, lineNumber,
                             TVShows.validateTVShowData(data[0], data[2], data[5], data[3], data[4], data[6], data[7], data[8]));
-                    int seasons = isValid ? Integer.parseInt(data[7].split(" ")[0]) : 0;
+                    int seasons = TVShows.parseSeasons(data[7]);
                     if (isValid)
                         products.add(new TVShows(Integer.parseInt(data[0]), ValidationUtils.substituteUnknown(data[2]),
                             ValidationUtils.substituteUnknown(data[3]), ValidationUtils.substituteUnknown(data[4]),
@@ -167,7 +165,7 @@ public class Manager {
 
     private int countProducts(Class<?> productType) {
         int count = 0;
-        for (productData product : products) {
+        for (ProductData product : products) {
             if (productType.isInstance(product)) {
                 count++;
             }
@@ -175,11 +173,11 @@ public class Manager {
         return count;
     }
 
-    public productData getOldestProduct() {
+    public ProductData getOldestProduct() {
         int oldest = Integer.MAX_VALUE;
         int temp = 0;
         int index = 0;
-        for (productData product : products) {
+        for (ProductData product : products) {
             if (product.getReleaseYear() < oldest) {
                 oldest = product.getReleaseYear();
                 index = temp;
@@ -189,11 +187,11 @@ public class Manager {
         return products.get(index);
     }
 
-    public productData getMostPopularMusicAlbum() {
+    public ProductData getMostPopularMusicAlbum() {
         int temp = Integer.MIN_VALUE;
         int count = 0;
         int index = 0;
-        for (productData product : products) {
+        for (ProductData product : products) {
             if (product instanceof MusicAlbums)
                 if (((MusicAlbums) product).getGlobalSales() > temp) {
                     temp = ((MusicAlbums) product).getGlobalSales();
@@ -201,14 +199,16 @@ public class Manager {
                 }
             count++;
         }
-        return products.get(index);
+        if(products.get(index) instanceof MusicAlbums)
+            return products.get(index);
+        return null;
     }
 
-    public productData getPopularVideoGame() {
+    public ProductData getPopularVideoGame() {
         double temp = Double.NEGATIVE_INFINITY;
         int count = 0;
         int index = 0;
-        for (productData product : products) {
+        for (ProductData product : products) {
             if (product instanceof VideoGames)
                 if (((VideoGames) product).getCopiesSold() > temp) {
                     temp = ((VideoGames) product).getCopiesSold();
@@ -216,14 +216,16 @@ public class Manager {
                 }
             count++;
         }
-        return products.get(index);
+        if(products.get(index) instanceof VideoGames)
+            return products.get(index);
+        return null;
     }
 
     public List<String> getCommonRatings() {
         Map<String, Integer> counts = new HashMap<>();
 
-        for (productData product : products) {
-            if (product instanceof digitalMediaData media) {
+        for (ProductData product : products) {
+            if (product instanceof DigitalMediaData media) {
                 String rating = media.getRating();
                 if (rating == null || rating.isBlank())
                     continue;
@@ -248,11 +250,11 @@ public class Manager {
         return mostCommon;
     }
 
-    public productData getShortestMovie() {
+    public ProductData getShortestMovie() {
         double temp = Double.MAX_VALUE;
         int count = 0;
         int index = 0;
-        for (productData product : products) {
+        for (ProductData product : products) {
             if (product instanceof Movies)
                 if (((Movies) product).getDuration() < temp) {
                     temp = ((Movies) product).getDuration();
@@ -260,14 +262,16 @@ public class Manager {
                 }
             count++;
         }
-        return products.get(index);
+        if(products.get(index) instanceof Movies)
+            return products.get(index);
+        return null;
     }
 
-    public productData getShortestAlbumDuration() {
+    public ProductData getShortestAlbumDuration() {
         double temp = Double.MAX_VALUE;
         int count = 0;
         int index = 0;
-        for (productData product : products) {
+        for (ProductData product : products) {
             if (product instanceof MusicAlbums)
                 if (((MusicAlbums) product).getDuration() < temp) {
                     temp = ((MusicAlbums) product).getDuration();
@@ -275,6 +279,8 @@ public class Manager {
                 }
             count++;
         }
-        return products.get(index);
+        if(products.get(index) instanceof MusicAlbums)
+            return products.get(index);
+        return null;
     }
 }

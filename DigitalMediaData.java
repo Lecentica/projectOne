@@ -1,12 +1,12 @@
 import java.util.List;
 
-public class digitalMediaData extends productData{
+public class DigitalMediaData extends ProductData{
     protected String director;
     protected String country;
     protected String rating;
     protected String discription;
 
-    public digitalMediaData(int i, String n, String d, String c, int ry, String r, String s) {
+    public DigitalMediaData(int i, String n, String d, String c, int ry, String r, String s) {
         super(i, n, ry);
         director=d;
         country=c;
@@ -30,4 +30,8 @@ public class digitalMediaData extends productData{
         return rating;
     }
     
+    public String getDirector()
+    {
+        return director;
+    }
 }

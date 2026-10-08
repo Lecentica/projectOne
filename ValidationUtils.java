@@ -9,7 +9,7 @@ final class ValidationUtils {
     }
 
     static List<List<String>> validateProductData(String id, String title, String releaseYear, String type) {
-        List<List<String>> logs = new ArrayList<>();
+        List<List<String>> logs = new ArrayList<>();    
         List<String> warnings = new ArrayList<>();
         List<String> errors = new ArrayList<>();
         if (!isValidIntegerValue(id)) {

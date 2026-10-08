@@ -1,6 +1,6 @@
 import java.util.List;
 
-public class MusicAlbums extends productData {
+public class MusicAlbums extends ProductData {
     String artist;
     int globalSales;
     int tracks;

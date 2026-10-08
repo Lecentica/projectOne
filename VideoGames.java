@@ -1,6 +1,6 @@
 import java.util.List;
 
-public class VideoGames extends productData {
+public class VideoGames extends ProductData {
 	String platform;
 	String genre;
 	String publisher;

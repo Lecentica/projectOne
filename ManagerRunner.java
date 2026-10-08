@@ -1,3 +1,5 @@
+
+
 import java.util.Scanner;
 
 public class ManagerRunner {
@@ -20,7 +22,7 @@ public class ManagerRunner {
         System.out.println("Total number of video games: " + manager.getTotalVideoGames());
         System.out.println("Total number of music albums: " + manager.getTotalMusicAlbums());
 
-        productData oldestProduct = manager.getOldestProduct();
+        ProductData oldestProduct = manager.getOldestProduct();
         System.out.println("Oldest product: " + oldestProduct.getTitle() + ", released in " + oldestProduct.getReleaseYear());
 
         MusicAlbums popularAlbum = (MusicAlbums) manager.getMostPopularMusicAlbum();

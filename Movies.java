@@ -1,7 +1,7 @@
 import java.util.Set;
 import java.util.List;
 
-public class Movies extends digitalMediaData {
+public class Movies extends DigitalMediaData {
     double duration;
     public static final Set<String> MOVIE_RATINGS = Set.of("G", "PG", "PG-13", "R", "NC-17", "TV-14", "TV-MA", "TV-PG");
     public Movies(int i, String n, String d, String c, int ry, String r, double l, String s) {
@@ -16,7 +16,7 @@ public class Movies extends digitalMediaData {
 
     public static List<List<String>> validateMovieData(String id, String title, String releaseYear, String director,
             String country, String rating, String duration, String description) {
-        List<List<String>> logs = digitalMediaData.validateDigitalMediaData(id, title, releaseYear, director, country,
+        List<List<String>> logs = DigitalMediaData.validateDigitalMediaData(id, title, releaseYear, director, country,
                 description);
         if (!ValidationUtils.hasUsableText(rating) || !MOVIE_RATINGS.contains(rating.toUpperCase(java.util.Locale.ROOT))) {
             ValidationUtils.addTextWarning(logs.get(0), "movie rating", rating);
